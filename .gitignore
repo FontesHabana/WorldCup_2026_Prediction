@@ -196,7 +196,7 @@ cython_debug/
 
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
+#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive datareview
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
@@ -210,4 +210,62 @@ __marimo__/
 
 
 #Research
-papers
+study/papers
+notebooks
+study
+datareview
+models_saved
+
+
+
+# ═══════════════════════════════════════════
+# DATOS —
+# ═══════════════════════════════════════════
+data/raw/
+data/processed/
+data/external/
+*.csv
+*.json
+*.parquet
+
+# ═══════════════════════════════════════════
+# MODELOS ENTRENADOS —
+# ═══════════════════════════════════════════
+models_saved/
+*.pkl
+*.pt
+*.h5
+*.joblib
+
+# ═══════════════════════════════════════════
+# NOTEBOOKS —
+# ═══════════════════════════════════════════
+notebooks/
+*.ipynb
+
+# ═══════════════════════════════════════════
+# STUDY AND PAPERS
+# ═══════════════════════════════════════════
+study/
+*.pdf
+
+# ═══════════════════════════════════════════
+# PYTHON
+# ═══════════════════════════════════════════
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+*.egg-info/
+dist/
+.pytest_cache/
+
+# ═══════════════════════════════════════════
+# OPERATIVE SYSTEM
+# ═══════════════════════════════════════════
+.DS_Store
+Thumbs.db
+
+
+stateSave
