@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
-
-from src.utils.persistence import save_model, load_model
 from scipy.optimize import minimize
-from scipy.stats import poisson
 from src.config.hyperparameters import (
     BOUNDS_ATTACK, BOUNDS_DEFENSE, BOUNDS_GAMMA, BOUNDS_RHO
 )
@@ -11,163 +8,115 @@ from utils.weights import compute_weights
 from data.loader import load_matches
 
 
-def poisson_prob(lambda_: float, k: int) -> float:
-    """Return the probability of scoring exactly k goals with rate lambda_."""
-    return poisson.pmf(k, lambda_)
-
-
-
-def tau(x: int, y: int,
-        lambda_home: float, lambda_away: float,
-        rho: float) -> float:
-    """Dixon-Coles correction factor for low-score outcomes."""
-    if x == y == 0:
-        return 1 - lambda_home * lambda_away * rho
-    if x == y == 1:
-        return 1 - rho
-    if x == 1 and y == 0:
-        return 1 + lambda_away * rho
-    if x == 0 and y == 1:
-        return 1 + lambda_home * rho
-    return 1.0
-
-
-def neg_log_likelihood(params: np.ndarray,
-                       teams: list,
-                       matches: list) -> float:
+def neg_log_likelihood_vectorized(params: np.ndarray,
+                                  n_teams: int,
+                                  home_indices: np.ndarray,
+                                  away_indices: np.ndarray,
+                                  home_goals: np.ndarray,
+                                  away_goals: np.ndarray,
+                                  weights: np.ndarray,
+                                  m00: np.ndarray,
+                                  m11: np.ndarray,
+                                  m10: np.ndarray,
+                                  m01: np.ndarray) -> float:
     """
-    Objective function for scipy.optimize.minimize.
-
-    params contains, in order:
-        - attack[i]  for each team i  (len = n_teams)
-        - defense[i] for each team i  (len = n_teams)
-        - gamma      (home advantage) (index = 2*n_teams)
-        - rho        (DC correction)  (index = 2*n_teams + 1)
-
-    Returns:
-        Negative weighted log-likelihood as float.
+    Versión vectorizada de la verosimilitud negativa de Dixon-Coles.
+    Calcula todos los partidos de forma simultánea usando arrays de NumPy.
     """
-    n = len(teams)
-    team_index = {team: i for i, team in enumerate(teams)}
+    attack = params[:n_teams]
+    defense = params[n_teams:2 * n_teams]
+    gamma = params[2 * n_teams]
+    rho = params[2 * n_teams + 1]
 
-    attack = params[:n]
-    defense = params[n:2 * n]
-    gamma = params[2 * n]
-    rho = params[2 * n + 1]
+    # Fuerza esperada de goles usando indexación avanzada
+    lambda_home = attack[home_indices] * defense[away_indices] * gamma
+    lambda_away = attack[away_indices] * defense[home_indices]
 
-    log_likelihood = 0.0
+    # Inicializar el factor de corrección tau con unos
+    tau_val = np.ones_like(home_goals, dtype=float)
 
-    for match in matches:
-        h = team_index[match["home_team"]]
-        a = team_index[match["away_team"]]
-        x = match["home_goals"]
-        y = match["away_goals"]
-        w = match["weight"]
+    # Aplicar la corrección Dixon-Coles usando las máscaras precalculadas
+    tau_val[m00] = 1.0 - lambda_home[m00] * lambda_away[m00] * rho
+    tau_val[m11] = 1.0 - rho
+    tau_val[m10] = 1.0 + lambda_away[m10] * rho
+    tau_val[m01] = 1.0 + lambda_home[m01] * rho
 
+    # Evitar indeterminaciones matemáticas (log de cero o valores negativos)
+    tau_val = np.clip(tau_val, 1e-10, None)
+    lambda_home = np.clip(lambda_home, 1e-10, None)
+    lambda_away = np.clip(lambda_away, 1e-10, None)
 
-        lambda_home = attack[h] * defense[a] * gamma
-        lambda_away = attack[a] * defense[h]
-        t = tau(x, y, lambda_home, lambda_away, rho)
+    # Densidad de Poisson simplificada (omitimos constantes que no afectan la optimización)
+    # log(Poisson) = k * log(lambda) - lambda
+    log_poisson_home = home_goals * np.log(lambda_home) - lambda_home
+    log_poisson_away = away_goals * np.log(lambda_away) - lambda_away
+    log_tau = np.log(tau_val)
 
+    # Suma ponderada por los pesos temporales
+    weighted_log_lik = weights * (log_tau + log_poisson_home + log_poisson_away)
 
-        log_p = (
-            np.log(np.clip(t,1e-10,None))
-            + np.log(np.clip(poisson_prob(lambda_home, x),1e-10,None))
-            + np.log(np.clip(poisson_prob(lambda_away, y),1e-10,None))
-        )
-
-        log_likelihood += w * log_p
-
-    return -log_likelihood
-
-
-def initialize_params(teams: list) -> np.ndarray:
-    """
-    Genera el vector inicial de parámetros para el optimizador.
-
-    Orden: [attack × n_teams | defense × n_teams | gamma | rho]
-    """
-    n = len(teams)
-
-    attack_init = np.ones(n)  # Ataque inicial: 1.0 para todos
-    defense_init = np.ones(n)  # Defensa inicial: 1.0 para todos
-    gamma_init = np.array([1.3])  # Ventaja de local inicial
-    rho_init = np.array([0.1])
-
-    return np.concatenate([attack_init,defense_init,gamma_init,rho_init])
-
-
+    return -np.sum(weighted_log_lik)
 
 
 def fit(df: pd.DataFrame) -> dict:
     """
-    Estima parámetros Dixon-Coles via MLE sobre datos históricos reales.
-
-    Recibe:
-        df: DataFrame limpio de load_matches() con columnas:
-            date, home_team, away_team, home_score, away_score,
-            tournament, neutral
-
-    Retorna:
-        {
-            'attack':         dict equipo -> float,
-            'defense':        dict equipo -> float,
-            'home_advantage': float  (gamma),
-            'rho':            float  (corrección Dixon-Coles),
-            'success':        bool
-        }
+    Ajusta Dixon-Coles a alta velocidad usando verosimilitud vectorizada.
     """
-    teams = list(pd.unique(df[['home_team', 'away_team']].values.ravel()))
+    # 1. Asegurar mapeo único de equipos
+    teams = sorted(list(pd.unique(df[['home_team', 'away_team']].values.ravel())))
     n = len(teams)
+    team_index = {team: i for i, team in enumerate(teams)}
 
+    # 2. Calcular pesos temporales
     df = df.reset_index(drop=True)
-    w = compute_weights(df['date'], df['tournament'])
+    weights = compute_weights(df['date'], df['tournament'])
 
+    # 3. Convertir columnas de pandas a arrays de NumPy de alta velocidad
+    home_indices = df['home_team'].map(team_index).values
+    away_indices = df['away_team'].map(team_index).values
+    home_goals = df['home_score'].values
+    away_goals = df['away_score'].values
 
-    matches = df.assign(weight=w).rename(columns={
-        'home_score': 'home_goals',
-        'away_score': 'away_goals'
-    })[['home_team', 'away_team', 'home_goals', 'away_goals', 'weight']].to_dict('records')
+    # 4. Precalcular máscaras booleanas para la corrección tau (Dixon-Coles)
+    m00 = (home_goals == 0) & (away_goals == 0)
+    m11 = (home_goals == 1) & (away_goals == 1)
+    m10 = (home_goals == 1) & (away_goals == 0)
+    m01 = (home_goals == 0) & (away_goals == 1)
 
+    # Limitar límites para evitar que el optimizador busque valores absurdos
     bounds = (
-            [BOUNDS_ATTACK] * n  +  # lista de 32 tuplas iguales
-            [BOUNDS_DEFENSE] * n +  # lista de 32 tuplas iguales
-            [BOUNDS_GAMMA]       +  # lista de 1 tupla
-            [BOUNDS_RHO]            # lista de 1 tupla
+            [BOUNDS_ATTACK] * n +
+            [BOUNDS_DEFENSE] * n +
+            [BOUNDS_GAMMA] +
+            [BOUNDS_RHO]
     )
 
-    # Punto de inicio
-    params_init = initialize_params(teams)
+    # Punto de partida uniforme
+    params_init = np.concatenate([
+        np.ones(n),  # Ataque inicial
+        np.ones(n),  # Defensa inicial
+        np.array([1.3]),  # Gamma inicial
+        np.array([0.1])  # Rho inicial
+    ])
 
-    # Llamada a scipy
-    result = minimize(fun=neg_log_likelihood,
-                      x0=params_init,
-                      args=(teams, matches),
-                      method="L-BFGS-B",
-                      bounds=bounds
+    # Llamada al optimizador (ahora correrá órdenes de magnitud más rápido)
+    result = minimize(
+        fun=neg_log_likelihood_vectorized,
+        x0=params_init,
+        args=(n, home_indices, away_indices, home_goals, away_goals, weights, m00, m11, m10, m01),
+        method="L-BFGS-B",
+        bounds=bounds
     )
 
     attack = dict(zip(teams, result.x[:n]))
     defense = dict(zip(teams, result.x[n:2 * n]))
-    gamma = result.x[2 * n]
-    rho = result.x[2 * n + 1]
+    gamma = float(result.x[2 * n])
+    rho = float(result.x[2 * n + 1])
 
     return {
         'attack': attack,
         'defense': defense,
         'home_advantage': gamma,
         'rho': rho,
-        'success': result.success,
+        'success': bool(result.success),
     }
-
-
-df=load_matches('../../datareview/results.csv')
-
-
-
-result = fit(df)
-teams = list(result['attack'].keys())
-print([result['attack'][t] for t in teams[:5]])   # primeros 5 ataques
-print(f"rho: {result['rho']:.4f}")
-print(f"success: {result['success']}")
-save_model(result)

@@ -20,6 +20,7 @@ class MatchResult:
     away_team: str
     home_goals: int
     away_goals: int
+    was_penalty: bool = False
 
     @property
     def winner(self) -> str:
@@ -92,3 +93,19 @@ class GroupResult:
     def sort_standings(self):
         """Ordena la tabla usando el comparador personalizado."""
         self.standings.sort(key=cmp_to_key(self.compare_teams), reverse=True)
+
+
+@dataclass
+class TournamentResult:
+    tournament_name: str
+    GroupResults: List[GroupResult]
+    Round32:List[MatchResult]
+    Round32Win:List[str]
+    Round16:List[MatchResult]
+    Round16Win:List[str]
+    Round8:List[MatchResult]
+    Round8Win:List[str]
+    SemiFinal:List[MatchResult]
+    SemiFinal:List[str]
+    Final:MatchResult
+    FinalWin:str

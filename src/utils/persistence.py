@@ -1,7 +1,7 @@
 import joblib
 import os
 
-def save_model(model_params, filename="models_saved/dixon_coles_params.joblib"):
+def save_model(model_params, filename="../../models_saved/dixon_coles_params.joblib"):
     """Guarda los parámetros del modelo en la carpeta models_saved."""
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     joblib.dump(model_params, filename)
@@ -15,3 +15,4 @@ def load_model(filename="models_saved/dixon_coles_params.joblib"):
     else:
         print("❌ No se encontró el archivo del modelo.")
         return None
+
