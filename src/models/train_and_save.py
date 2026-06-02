@@ -7,7 +7,7 @@ from src.utils.persistence import save_model
 
 def main():
     print("Cargando partidos históricos...")
-    df = load_matches('../../datareview/results.csv')
+    df = load_matches('../../data/results.csv')
 
     print("Ajustando modelo Dixon-Coles (Vectorizado)...")
     result = fit(df)

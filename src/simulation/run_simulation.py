@@ -1,42 +1,57 @@
+# src/simulation/run_simulation.py
+
+import os
+import joblib
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+
 from src.simulation.monte_carlo import MonteCarloEngine
 from src.utils.persistence import load_model
 
-
 def main():
-    # 1. Load your trained model parameters
-    # Adjust path if necessary
+    # 1. Cargar parámetros optimizados de Dixon-Coles
     try:
         params = load_model("../../models_saved/dixon_coles_params.joblib")
-        print("--- PARÁMETROS EN EL ARCHIVO JOBLIB ---")
+        print("--- PARÁMETROS EN EL ARCHIVO JOBLIB (DIXON-COLES) ---")
         print(f"¿Existe 'spain'?: {'spain' in params['attack']}")
         if 'spain' in params['attack']:
             print(f"Ataque de España guardado: {params['attack']['spain']:.4f}")
             print(f"Ataque de Arabia Saudita guardado: {params['attack']['saudi arabia']:.4f}")
     except FileNotFoundError:
-        print("Model file not found. Ensure the path is correct.")
+        print("Error: No se encontró el archivo de Dixon-Coles. Verifica la ruta.")
         return
 
-    # 2. Initialize and Run Engine
-    # 1000 iterations is a good balance between speed and statistical significance
-    iterations = 1000
+    # --- NUEVO: ACOPLAMIENTO DE MACHINE LEARNING ---
+    # Cargamos el ensamble guardado de XGBoost y lo inyectamos en el diccionario de parámetros
+    ensemble_path = "../../models_saved/ensemble_model.joblib"
+    try:
+        ensemble = joblib.load(ensemble_path)
+        params['ensemble'] = ensemble
+        print("¡Ensamble de Machine Learning (XGBoost) cargado e integrado con éxito!")
+    except FileNotFoundError:
+        params['ensemble'] = None
+        print("Advertencia: No se encontró 'ensemble_model.joblib'. Corriendo simulación con Dixon-Coles puro.")
+    # -----------------------------------------------
+
+    # 2. Inicializar y correr el motor de Monte Carlo
+    # 1000 iteraciones es el balance ideal para este sprint
+    iterations = 100000
     engine = MonteCarloEngine(iterations=iterations)
 
-    print(f"Starting Monte Carlo Simulation ({iterations} iterations)...")
+    print(f"\nIniciando simulación de Monte Carlo con Ensamble Inteligente ({iterations} iteraciones)...")
     engine.run(params)
 
-    # 3. Get the probability report
+    # 3. Obtener reporte probabilístico final
     df_report = engine.get_probability_report()
 
-    # 4. Display Top 15 Favorites
-    print("\n--- TOURNAMENT PROBABILITIES (Top 15) ---")
+    # 4. Mostrar el Top 15 de favoritos para ganar el Mundial 2026
+    print("\n--- PROBABILIDADES DEL TORNEO (Top 15 con XGBoost) ---")
     print(df_report.head(15))
 
-    # 5. Visualization
+    # 5. Visualización
     plt.figure(figsize=(12, 8))
-    # Taking top 10 for the plot
+    # Tomamos el Top 10 para graficar
     plot_data = df_report.head(10)
 
     sns.set_theme(style="whitegrid")
@@ -47,16 +62,17 @@ def main():
         figsize=(10, 6)
     )
 
-    plt.title(f"Tournament Win Probability (Based on {iterations} simulations)")
-    plt.xlabel("Probability (%)")
-    plt.ylabel("Team")
-    plt.legend(title="Stage Reached")
-    plt.gca().invert_yaxis()  # Highest probability at the top
+    plt.title(f"Probabilidades del Torneo (Basado en {iterations} simulaciones con Ensamble ML)")
+    plt.xlabel("Probabilidad (%)")
+    plt.ylabel("Equipo")
+    plt.legend(title="Fase alcanzada")
+    plt.gca().invert_yaxis()  # El favorito se muestra arriba
     plt.tight_layout()
     plt.show()
 
-    # 6. Optional: Save to CSV
-    # df_report.to_csv("simulation_results.csv")
+    # 6. Opcional: Guardar reporte final a un archivo CSV
+    df_report.to_csv("../../simulation_results_xgb.csv")
+    print("\nResultados de simulación guardados con éxito en 'simulation_results_xgb.csv'.")
 
 
 if __name__ == "__main__":
