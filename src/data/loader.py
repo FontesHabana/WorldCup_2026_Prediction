@@ -31,6 +31,8 @@ def load_matches(filepath, split='train', date_train_end='2020-01-01',
         df = df[(df['date'] >= date_train_end) & (df['date'] < date_val_end)]
     elif split == 'test':
         df = df[df['date'] >= date_val_end]
+    elif split == 'all':
+        df = df[df['date'] >= '1900-01-01']
     else:
         raise ValueError(f"split debe ser 'train', 'validate' o 'test', recibí: {split}")
 
