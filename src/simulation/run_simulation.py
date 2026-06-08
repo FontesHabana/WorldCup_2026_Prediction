@@ -36,7 +36,7 @@ def main():
 
     # 2. Inicializar y correr el motor de Monte Carlo
     # 1000 iteraciones es el balance ideal para este sprint
-    iterations = 100000
+    iterations = 100
     engine = MonteCarloEngine(iterations=iterations)
 
     print(f"\nIniciando simulación de Monte Carlo con Ensamble Inteligente ({iterations} iteraciones)...")
