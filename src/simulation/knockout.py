@@ -1,7 +1,7 @@
 from typing import List, Dict, Tuple
 import random
 from src.simulation.models import GroupResult, TeamStats, MatchResult
-from src.simulation.match_simulator import simulate_match
+from src.simulation.match_simulator import simulate_match, get_match_electric_factor
 
 
 def get_best_third_places(group_results: List[GroupResult]) -> List[TeamStats]:
@@ -65,78 +65,82 @@ def run_tournament_knockout(group_results: List[GroupResult], model_params: dict
     m = {}
 
     # Left Side of Bracket
-    m['M74'], data = simulate_ko(winners['E'], matched_thirds['E'], model_params)
+    m['M74'], data = simulate_ko(winners['E'], matched_thirds['E'], model_params, "round_of_32")
     match_history.append(data)
-    m['M77'], data = simulate_ko(winners['I'], matched_thirds['I'], model_params)
+    m['M77'], data = simulate_ko(winners['I'], matched_thirds['I'], model_params, "round_of_32")
     match_history.append(data)
-    m['M73'], data = simulate_ko(runners['A'], runners['B'], model_params)  # 2A vs 2B
+    m['M73'], data = simulate_ko(runners['A'], runners['B'], model_params, "round_of_32")  # 2A vs 2B
     match_history.append(data)
-    m['M75'], data = simulate_ko(winners['F'], runners['C'], model_params)  # 1F vs 2C
+    m['M75'], data = simulate_ko(winners['F'], runners['C'], model_params, "round_of_32")  # 1F vs 2C
     match_history.append(data)
-    m['M83'], data = simulate_ko(runners['K'], runners['L'], model_params)  # 2K vs 2L
+    m['M83'], data = simulate_ko(runners['K'], runners['L'], model_params, "round_of_32")  # 2K vs 2L
     match_history.append(data)
-    m['M84'], data = simulate_ko(winners['H'], runners['J'], model_params)  # 1H vs 2J
+    m['M84'], data = simulate_ko(winners['H'], runners['J'], model_params, "round_of_32")  # 1H vs 2J
     match_history.append(data)
-    m['M81'], data = simulate_ko(winners['D'], matched_thirds['D'], model_params)
+    m['M81'], data = simulate_ko(winners['D'], matched_thirds['D'], model_params, "round_of_32")
     match_history.append(data)
-    m['M82'], data = simulate_ko(winners['G'], matched_thirds['G'], model_params)
+    m['M82'], data = simulate_ko(winners['G'], matched_thirds['G'], model_params, "round_of_32")
 
     # Right Side of Bracket
-    m['M76'], data = simulate_ko(winners['C'], runners['F'], model_params)  # 1C vs 2F
+    m['M76'], data = simulate_ko(winners['C'], runners['F'], model_params, "round_of_32")  # 1C vs 2F
     match_history.append(data)
-    m['M78'], data = simulate_ko(runners['E'], runners['I'], model_params)  # 2E vs 2I
+    m['M78'], data = simulate_ko(runners['E'], runners['I'], model_params, "round_of_32")  # 2E vs 2I
     match_history.append(data)
-    m['M79'], data = simulate_ko(winners['A'], matched_thirds['A'], model_params)
+    m['M79'], data = simulate_ko(winners['A'], matched_thirds['A'], model_params, "round_of_32")
     match_history.append(data)
-    m['M80'], data = simulate_ko(winners['L'], matched_thirds['L'], model_params)
+    m['M80'], data = simulate_ko(winners['L'], matched_thirds['L'], model_params, "round_of_32")
     match_history.append(data)
-    m['M86'], data = simulate_ko(winners['J'], runners['H'], model_params)  # 1J vs 2H
+    m['M86'], data = simulate_ko(winners['J'], runners['H'], model_params, "round_of_32")  # 1J vs 2H
     match_history.append(data)
-    m['M88'], data = simulate_ko(runners['D'], runners['G'], model_params)  # 2D vs 2G
+    m['M88'], data = simulate_ko(runners['D'], runners['G'], model_params, "round_of_32")  # 2D vs 2G
     match_history.append(data)
     # CORRECCIÓN BUG M85: Originalmente tenías runners['B'] (quien ya jugaba en el M73). Es el turno de winners['B']
-    m['M85'], data = simulate_ko(winners['B'], matched_thirds['B'], model_params)
+    m['M85'], data = simulate_ko(winners['B'], matched_thirds['B'], model_params, "round_of_32")
     match_history.append(data)
-    m['M87'], data = simulate_ko(winners['K'], matched_thirds['K'], model_params)
+    m['M87'], data = simulate_ko(winners['K'], matched_thirds['K'], model_params, "round_of_32")
     match_history.append(data)
 
     # 3. ROUND OF 16 (Winners of M73-M88)
-    m['M89'], data = simulate_ko(m['M74'], m['M77'], model_params)
+    m['M89'], data = simulate_ko(m['M74'], m['M77'], model_params, "round_of_16")
     match_history.append(data)
-    m['M90'], data = simulate_ko(m['M73'], m['M75'], model_params)
+    m['M90'], data = simulate_ko(m['M73'], m['M75'], model_params, "round_of_16")
     match_history.append(data)
-    m['M93'], data = simulate_ko(m['M83'], m['M84'], model_params)
+    m['M93'], data = simulate_ko(m['M83'], m['M84'], model_params, "round_of_16")
     match_history.append(data)
-    m['M94'], data = simulate_ko(m['M81'], m['M82'], model_params)
+    m['M94'], data = simulate_ko(m['M81'], m['M82'], model_params, "round_of_16")
     match_history.append(data)
 
-    m['M91'], data = simulate_ko(m['M76'], m['M78'], model_params)
+    m['M91'], data = simulate_ko(m['M76'], m['M78'], model_params, "round_of_16")
     match_history.append(data)
-    m['M92'], data = simulate_ko(m['M79'], m['M80'], model_params)
+    m['M92'], data = simulate_ko(m['M79'], m['M80'], model_params, "round_of_16")
     match_history.append(data)
-    m['M95'], data = simulate_ko(m['M86'], m['M88'], model_params)
+    m['M95'], data = simulate_ko(m['M86'], m['M88'], model_params, "round_of_16")
     match_history.append(data)
-    m['M96'], data = simulate_ko(m['M85'], m['M87'], model_params)
+    m['M96'], data = simulate_ko(m['M85'], m['M87'], model_params, "round_of_16")
     match_history.append(data)
 
     # 4. QUARTER FINALS
-    m['M97'], data = simulate_ko(m['M89'], m['M90'], model_params)
+    m['M97'], data = simulate_ko(m['M89'], m['M90'], model_params, "quarter_finals")
     match_history.append(data)
-    m['M98'], data = simulate_ko(m['M93'], m['M94'], model_params)
+    m['M98'], data = simulate_ko(m['M93'], m['M94'], model_params, "quarter_finals")
     match_history.append(data)
-    m['M99'], data = simulate_ko(m['M91'], m['M92'], model_params)
+    m['M99'], data = simulate_ko(m['M91'], m['M92'], model_params, "quarter_finals")
     match_history.append(data)
-    m['M100'], data = simulate_ko(m['M95'], m['M96'], model_params)
+    m['M100'], data = simulate_ko(m['M95'], m['M96'], model_params, "quarter_finals")
     match_history.append(data)
 
     # 5. SEMI FINALS
-    m['M101'], data = simulate_ko(m['M97'], m['M98'], model_params)
+    m['M101'], data = simulate_ko(m['M97'], m['M98'], model_params, "semi_finals")
     match_history.append(data)
-    m['M102'], data = simulate_ko(m['M99'], m['M100'], model_params)
+    m['M102'], data = simulate_ko(m['M99'], m['M100'], model_params, "semi_finals")
+    match_history.append(data)
+
+    #Third Place
+    m['M103'], data = simulate_ko(get_loser(match_history[-1]), get_loser(match_history[-1]), model_params, "third_place")
     match_history.append(data)
 
     # 6. FINAL
-    champion, data = simulate_ko(m['M101'], m['M102'], model_params)
+    champion, data = simulate_ko(m['M101'], m['M102'], model_params, "final")
     match_history.append(data)
 
     result = {
@@ -149,10 +153,18 @@ def run_tournament_knockout(group_results: List[GroupResult], model_params: dict
     return champion, result, match_history
 
 
-def simulate_ko(team_a: str, team_b: str, params: dict) -> Tuple[str, dict]:
+
+def get_loser(match_data: dict) -> str:
+    winner = match_data["winner"]
+    if winner == match_data["home"]: return match_data["away"]
+    else: return match_data["home"]
+
+def simulate_ko(team_a: str, team_b: str, params: dict,electric: str) -> Tuple[str, dict]:
     """
     Returns (WinnerName, MatchDataDictionary)
     """
+    match_params = params.copy()
+    match_params['electric_factor']=get_match_electric_factor(electric)
     res = simulate_match(team_a, team_b, params, neutral=True)
 
     winner = res.winner

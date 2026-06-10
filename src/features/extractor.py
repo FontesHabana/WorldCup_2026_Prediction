@@ -1,3 +1,5 @@
+# src/features/feature_extractor.py
+
 import pandas as pd
 import numpy as np
 from typing import Dict, Any
@@ -28,7 +30,6 @@ class FeatureExtractor:
         df_rankings['year'] = df_rankings['date'].dt.year
 
         # --- RESOLUCIÓN DE REDUNDANCIA TEMPORAL POR AÑO ---
-        # Ordenamos descendentemente por fecha para conservar el registro más reciente de ese año.
         df_rankings = df_rankings.sort_values(by='date', ascending=False)
         df_rankings_cleaned = df_rankings.drop_duplicates(subset=['team', 'year'])
 
@@ -69,17 +70,14 @@ class FeatureExtractor:
 
         team_years = self.rankings_history[team_clean]
 
-        # Intentamos obtener el año exacto solicitado
         if year in team_years:
             return team_years[year]
 
-        # Estrategia de Fallback: buscar el año anterior más cercano disponible
         past_years = [y for y in team_years.keys() if y < year]
         if past_years:
             closest_year = max(past_years)
             return team_years[closest_year]
 
-        # Si no hay registros previos al año solicitado, usamos el año más antiguo disponible
         closest_year = min(team_years.keys())
         return team_years[closest_year]
 
@@ -88,16 +86,17 @@ class FeatureExtractor:
                          away_team: str,
                          match_year: int,
                          match_date: str,
-                         dc_prob_home: float,
-                         dc_prob_draw: float,
-                         dc_prob_away: float) -> Dict[str, Any]:
+                         dc_prob_home: float = 0.0,  # Opcional para mantener compatibilidad
+                         dc_prob_draw: float = 0.0,  # Opcional para mantener compatibilidad
+                         dc_prob_away: float = 0.0   # Opcional para mantener compatibilidad
+                         ) -> Dict[str, Any]:
         """
-        Construye la matriz de características para un enfrentamiento específico
-        utilizando los datos correspondientes al año del partido, prestigio dinámico y plantilla.
+        Construye la matriz de características para un enfrentamiento específico.
+        DISEÑO SOTA: Excluye por completo las variables de Dixon-Coles y sus interacciones
+        para evitar cualquier tipo de data leakage/overfitting in-sample.
         """
         network_diff = 0.0
 
-        # FIXED: Ahora pasamos match_date para hacer cálculo de prestigio dinámico libre de fugas
         if self.network_model is not None:
             h_net = self.network_model.get_team_centrality(home_team, match_date)
             a_net = self.network_model.get_team_centrality(away_team, match_date)
@@ -108,19 +107,12 @@ class FeatureExtractor:
         home_data = self.get_team_metrics(home_team, match_year)
         away_data = self.get_team_metrics(away_team, match_year)
 
-        # 1. Diferencia de Rango Ordinal
+        # 1. Características base de Rankings FIFA
         rank_diff = away_data['rank'] - home_data['rank']
-
-        # 2. Diferencia de Puntos FIFA
         points_diff = home_data['points'] - away_data['points']
-
-        # 3. Diferencia de Tendencia
         trend_diff = home_data['diff_points'] - away_data['diff_points']
 
-        # 4. Interacción Probabilidad-Puntos
-        dc_points_interaction = dc_prob_home * points_diff
-
-        # 5. Inicialización de valores de plantilla
+        # 2. Inicialización de valores de plantilla
         dif_value_gk = 0.0
         dif_value_def = 0.0
         dif_value_mid = 0.0
@@ -137,21 +129,13 @@ class FeatureExtractor:
             dif_value_fwd = h_vals['value_fwd'] - a_vals['value_fwd']
             dif_value_squad_mean = h_vals['value_squad_mean'] - a_vals['value_squad_mean']
 
-        # Retornamos el diccionario completo alineado para XGBoost
+        # RETORNO SOTA: Solo variables estructurales, físicas, de prestigio y valor monetario.
+        # Zero Coupling con Dixon-Coles.
         return {
-            'dc_prob_home': dc_prob_home,
-            'dc_prob_draw': dc_prob_draw,
-            'dc_prob_away': dc_prob_away,
             'rank_diff': rank_diff,
             'points_diff': points_diff,
             'trend_diff': trend_diff,
-            'dc_points_interaction': dc_points_interaction,
-
-            # FIXED: Retornamos las variables de red calculadas
             'network_diff': network_diff,
-            'dc_network_interaction': dc_prob_home * network_diff,
-
-            # Variables de plantilla por líneas
             'dif_value_gk': dif_value_gk,
             'dif_value_def': dif_value_def,
             'dif_value_mid': dif_value_mid,
