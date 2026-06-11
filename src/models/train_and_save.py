@@ -7,7 +7,7 @@ from src.utils.persistence import save_model
 
 def main():
     print("Cargando partidos históricos...")
-    df = load_matches('../../data/results.csv')
+    df = load_matches('../../data/results.csv', split='all')
 
     print("Ajustando modelo Dixon-Coles (Vectorizado)...")
     result = fit(df)
@@ -16,6 +16,7 @@ def main():
         print("¡Ajuste exitoso!")
         # Crear el directorio si no existe
         os.makedirs("../../models_saved", exist_ok=True)
+
 
         # Guardar los parámetros reales
         save_model(result, '../../models_saved/dixon_coles_params.joblib')

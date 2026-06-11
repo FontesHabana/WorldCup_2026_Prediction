@@ -97,8 +97,9 @@ def main():
     squads_path = '../../data/squads/convocatorias_oficiales.csv'
 
     print("1. Cargando datos divididos por splits temporales...")
-    df_train = load_matches(matches_csv_path, split='train')
-    df_val = load_matches(matches_csv_path, split='validate')
+    df_train = load_matches(matches_csv_path, split='all')
+    #df_val = load_matches(matches_csv_path, split='validate')
+    df_val = df_train.tail(100)
 
     print(f"Partidos de Entrenamiento: {len(df_train)}")
     print(f"Partidos de Validación: {len(df_val)}")

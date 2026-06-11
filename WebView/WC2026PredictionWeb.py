@@ -1,418 +1,293 @@
 import streamlit as st
 import pandas as pd
+import json
+import os
+import glob
+from PIL import Image
 
-# 1. Configuración de la página
+# --- CONFIGURACIÓN Y RUTAS ---
 st.set_page_config(
-    page_title="Mundial 2026 - Control de Predicciones y Resultados",
+    page_title="Mundial 2026 - Predicciones Dinámicas",
     page_icon="🏆",
     layout="wide"
 )
 
-# Estilos personalizados sencillos
+# Ajuste de rutas para entorno local
+BASE_DIR = "/home/fontes/workspace/personal_projects/WorldCup_2026_Prediction"
+RESULTS_DIR = os.path.join(BASE_DIR, "simulation_results")
+
+PATH_FASES = os.path.join(RESULTS_DIR, "probabilidades_fases.csv")
+PATH_GRUPOS = os.path.join(RESULTS_DIR, "probabilidades_grupos.csv")
+PATH_BRACKET = os.path.join(RESULTS_DIR, "bracket_mas_probable.json")
+PATH_CHART = os.path.join(RESULTS_DIR, "grafico_probabilidades.png")
+PATH_MATCHES = os.path.join(RESULTS_DIR, "partidos_mas_probables_por_grupo.csv")
+
+# --- ESTILOS ---
 st.markdown("""
 <style>
-    .titulo-principal {
-        color: #1b5e20;
-        font-family: 'Helvetica Neue', sans-serif;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 5px;
-    }
-    .sub-titulo {
-        color: #555555;
-        text-align: center;
-        font-size: 1.1rem;
-        margin-bottom: 25px;
-    }
-    .card-metrica {
-        background-color: #f1f8e9;
-        border: 1px solid #c5e1a5;
-        border-radius: 8px;
-        padding: 15px;
-        text-align: center;
-    }
+    .titulo-principal { color: #1b5e20; font-family: 'Helvetica Neue', sans-serif; font-weight: bold; text-align: center; margin-bottom: 5px; }
+    .sub-titulo { color: #555555; text-align: center; font-size: 1.1rem; margin-bottom: 25px; }
+    .stDataFrame { border: 1px solid #e0e0e0; border-radius: 5px; }
+    .bracket-match { border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 10px; background-color: #f9f9f9; }
+    .match-winner { font-weight: bold; color: #2e7d32; }
+    .group-header { background-color: #1b5e20; color: white; padding: 5px; border-radius: 5px; text-align: center; }
 </style>
-""", unsafe_html=True)
+""", unsafe_allow_html=True)
 
-st.markdown("<h1 class='titulo-principal'>🏆 Copa Mundial de la FIFA 2026</h1>", unsafe_html=True)
-st.markdown(
-    "<p class='sub-titulo'>Análisis de Resultados Oficiales, Predicciones y Probabilidades de Clasificación</p>",
-    unsafe_html=True)
+st.markdown("<h1 class='titulo-principal'>🏆 Copa Mundial de la FIFA 2026</h1>", unsafe_allow_html=True)
+st.markdown("<p class='sub-titulo'>Predicciones Dinámicas Basadas en Simulación AI</p>", unsafe_allow_html=True)
 
-# 2. Definición de los 12 Grupos Oficiales de 4 Equipos
-GRUPOS_TEAMS = {
-    "Grupo A": ["México", "Sudáfrica", "Corea del Sur", "Dinamarca"],
-    "Grupo B": ["Canadá", "Suiza", "Qatar", "Italia"],
-    "Grupo C": ["Brasil", "Marruecos", "Haití", "Escocia"],
-    "Grupo D": ["EE. UU.", "Paraguay", "Australia", "Turquía"],
-    "Grupo E": ["Alemania", "Curazao", "Costa de Marfil", "Ecuador"],
-    "Grupo F": ["Países Bajos", "Japón", "Ucrania", "Túnez"],
-    "Grupo G": ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"],
-    "Grupo H": ["España", "Cabo Verde", "Arabia Saudita", "Uruguay"],
-    "Grupo I": ["Francia", "Senegal", "Irak", "Noruega"],
-    "Grupo J": ["Argentina", "Argelia", "Austria", "Jordania"],
-    "Grupo K": ["Portugal", "Colombia", "Uzbekistán", "Rep. Dem. Congo"],
-    "Grupo L": ["Inglaterra", "Croacia", "Ghana", "Panamá"]
-}
-
-
-# 3. Generación dinámica de la Fase de Grupos (6 partidos por grupo)
+# --- CARGA DINÁMICA DE METADATA ---
 @st.cache_data
-def generar_partidos_base():
-    partidos = []
-    id_partido = 1
+def get_dynamic_metadata():
+    if not os.path.exists(PATH_MATCHES):
+        return {}, {}
+    
+    df = pd.read_csv(PATH_MATCHES)
+    mapping = {}
+    grupos = {}
+    
+    for _, row in df.iterrows():
+        g = f"Grupo {row['Group']}"
+        t1, t2 = row['Team_A'].lower(), row['Team_B'].lower()
+        
+        mapping[t1] = t1.replace('_', ' ').title()
+        mapping[t2] = t2.replace('_', ' ').title()
+        
+        if g not in grupos:
+            grupos[g] = set()
+        grupos[g].add(t1)
+        grupos[g].add(t2)
+        
+    return mapping, {k: sorted(list(v)) for k, v in grupos.items()}
 
-    # Algunos resultados reales iniciales de prueba (ejemplo de la Jornada 1)
-    resultados_reales_mock = {
-        ("México", "Sudáfrica"): (2, 1),
-        ("Canadá", "Suiza"): (0, 2),
-        ("Brasil", "Marruecos"): (2, 2),
-        ("EE. UU.", "Paraguay"): (1, 1),
-        ("Alemania", "Curazao"): (3, 0),
-        ("Países Bajos", "Japón"): (2, 1),
-        ("Bélgica", "Egipto"): (2, 0),
-        ("España", "Cabo Verde"): (3, 0),
-        ("Francia", "Senegal"): (2, 0),
-        ("Argentina", "Argelia"): (2, 1),
-        ("Portugal", "Colombia"): (3, 1),
-        ("Inglaterra", "Croacia"): (2, 0),
-    }
+TEAM_MAPPING_DYNAMIC, GRUPOS_TEAMS_DYNAMIC = get_dynamic_metadata()
 
-    # Predicciones iniciales por defecto cargadas en el sistema para ilustrar el funcionamiento
-    predicciones_mock = {
-        ("México", "Sudáfrica"): (2, 0),  # Acierto de ganador, marcador incorrecto
-        ("Canadá", "Suiza"): (1, 2),  # Acierto de ganador, marcador incorrecto
-        ("Brasil", "Marruecos"): (3, 1),  # Fallo total (se pronosticó victoria y fue empate)
-        ("EE. UU.", "Paraguay"): (1, 1),  # Acierto Exacto
-        ("Alemania", "Curazao"): (4, 0),  # Acierto de ganador
-        ("Países Bajos", "Japón"): (2, 1),  # Acierto Exacto
-        ("Bélgica", "Egipto"): (1, 1),  # Fallo
-        ("España", "Cabo Verde"): (3, 0),  # Acierto Exacto
-        ("Francia", "Senegal"): (2, 1),  # Acierto de ganador
-        ("Argentina", "Argelia"): (2, 1),  # Acierto Exacto
-        ("Portugal", "Colombia"): (2, 2),  # Fallo
-        ("Inglaterra", "Croacia"): (1, 0),  # Acierto de ganador
-    }
+def get_display_name(slug):
+    if not slug or pd.isna(slug): return "TBD"
+    slug_clean = str(slug).lower().strip()
+    return TEAM_MAPPING_DYNAMIC.get(slug_clean, slug_clean.title())
 
-    for grupo, equipos in GRUPOS_TEAMS.items():
-        t1, t2, t3, t4 = equipos
-        # Enfrentamientos round-robin estándar para 4 equipos
-        rondas = [
-            (t1, t2), (t3, t4),
-            (t1, t3), (t4, t2),
-            (t4, t1), (t2, t3)
-        ]
-        for loc, vis in rondas:
-            g_l_of = resultados_reales_mock.get((loc, vis), None)
-            g_v_of = resultados_reales_mock.get((loc, vis), None)
-            if g_l_of is not None:
-                g_l_of, g_v_of = resultados_reales_mock[(loc, vis)]
+# --- CARGA DE DATOS ---
+@st.cache_data
+def load_data():
+    df_fases = pd.read_csv(PATH_FASES) if os.path.exists(PATH_FASES) else pd.DataFrame()
+    if not df_fases.empty and (df_fases.columns[0] == "Unnamed: 0" or "Team" not in df_fases.columns):
+        df_fases = df_fases.rename(columns={df_fases.columns[0]: "Team"})
 
-            g_l_pr, g_v_pr = predicciones_mock.get((loc, vis), (None, None))
+    df_grupos = pd.read_csv(PATH_GRUPOS) if os.path.exists(PATH_GRUPOS) else pd.DataFrame()
+    
+    bracket = {}
+    if os.path.exists(PATH_BRACKET):
+        with open(PATH_BRACKET, 'r') as f:
+            bracket = json.load(f)
 
-            partidos.append({
-                "id": id_partido,
-                "grupo": grupo,
-                "local": loc,
-                "visitante": vis,
-                "goles_l_oficial": g_l_of,
-                "goles_v_oficial": g_v_of,
-                "goles_l_pred": g_l_pr,
-                "goles_v_pred": g_v_pr
-            })
-            id_partido += 1
-    return partidos
+    df_matches = pd.read_csv(PATH_MATCHES) if os.path.exists(PATH_MATCHES) else pd.DataFrame()
+    
+    return df_fases, df_grupos, bracket, df_matches
 
+df_fases, df_grupos, bracket_data, df_matches_all = load_data()
 
-# Inicializar partidos en Session State para mantener persistencia
-if 'partidos' not in st.session_state:
-    st.session_state.partidos = generar_partidos_base()
-
-# Sincronización de los inputs de predicción ingresados por el usuario
-for p in st.session_state.partidos:
-    key_l = f"l_p_{p['id']}"
-    key_v = f"v_p_{p['id']}"
-    if key_l in st.session_state:
-        p["goles_l_pred"] = st.session_state[key_l]
-    if key_v in st.session_state:
-        p["goles_v_pred"] = st.session_state[key_v]
-
-
-# 4. Función para calcular las tablas de posiciones (oficial o proyectada)
-def calcular_tabla_grupo(grupo, partidos, modo="oficial"):
-    teams = GRUPOS_TEAMS[grupo]
-    tabla = {t: {"PJ": 0, "G": 0, "E": 0, "P": 0, "GF": 0, "GC": 0, "DG": 0, "Pts": 0} for t in teams}
-
-    for p in partidos:
-        if p["grupo"] != grupo:
-            continue
-
-        if modo == "oficial":
-            g_l, g_v = p["goles_l_oficial"], p["goles_v_oficial"]
-        else:
-            # En el modo predicción, si el usuario la definió se usa, sino se recurre al oficial como base
-            g_l = p["goles_l_pred"] if p["goles_l_pred"] is not None else p["goles_l_oficial"]
-            g_v = p["goles_v_pred"] if p["goles_v_pred"] is not None else p["goles_v_oficial"]
-
-        if g_l is None or g_v is None:
-            continue
-
-        tabla[p["local"]]["PJ"] += 1
-        tabla[p["visitante"]]["PJ"] += 1
-        tabla[p["local"]]["GF"] += g_l
-        tabla[p["local"]]["GC"] += g_v
-        tabla[p["visitante"]]["GF"] += g_v
-        tabla[p["visitante"]]["GC"] += g_l
-
-        if g_l > g_v:
-            tabla[p["local"]]["G"] += 1
-            tabla[p["local"]]["Pts"] += 3
-            tabla[p["visitante"]]["P"] += 1
-        elif g_l == g_v:
-            tabla[p["local"]]["E"] += 1
-            tabla[p["local"]]["Pts"] += 1
-            tabla[p["visitante"]]["E"] += 1
-            tabla[p["visitante"]]["Pts"] += 1
-        else:
-            tabla[p["visitante"]]["G"] += 1
-            tabla[p["visitante"]]["Pts"] += 3
-            tabla[p["local"]]["P"] += 1
-
-    for t in tabla:
-        tabla[t]["DG"] = tabla[t]["GF"] - tabla[t]["GC"]
-
-    df = pd.DataFrame.from_dict(tabla, orient="index")
-    df = df.sort_values(by=["Pts", "DG", "GF"], ascending=False)
-    df.index.name = "Equipo"
-    return df.reset_index()
-
-
-# 5. Diseño de Navegación por Pestañas
-tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Dashboard y Aciertos",
-    "📅 Registro de Predicciones",
-    "🔑 Clasificación de Grupos",
-    "🔮 Favoritos y Campeón Proyectado"
+# --- PESTAÑAS ---
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "📊 Probabilidades",
+    "📅 Fase de Grupos",
+    "🌳 Bracket KO",
+    "🔮 Validación",
+    "📝 Mi Calendario"
 ])
 
-# ================= TAB 1: DASHBOARD Y ACIERTOS =================
+# --- TAB 1: PROBABILIDADES ---
 with tab1:
-    st.subheader("Análisis de Rendimiento de Predicciones")
+    st.subheader("Probabilidades de Éxito por Equipo")
+    if not df_fases.empty:
+        display_df = df_fases.copy()
+        display_df['Team'] = display_df['Team'].apply(get_display_name)
+        display_df = display_df.set_index('Team')
+        st.dataframe(display_df.style.background_gradient(cmap='YlGn', axis=None).format("{:.2f}%"), 
+                     height=600, use_container_width=True)
+    
+    if os.path.exists(PATH_CHART):
+        st.image(Image.open(PATH_CHART), caption="Mapa de Probabilidades Global", use_container_width=True)
 
-    # Filtrar partidos que tienen tanto resultado oficial como predicción del usuario
-    partidos_evaluados = []
-    goles_reales_totales = 0
-    goles_predichos_totales = 0
-    aciertos_exactos = 0
-    aciertos_ganador = 0  # Incluye empate acertado
-
-    for p in st.session_state.partidos:
-        if p["goles_l_oficial"] is not None and p["goles_l_pred"] is not None:
-            partidos_evaluados.append(p)
-            goles_reales_totales += p["goles_l_oficial"] + p["goles_v_oficial"]
-            goles_predichos_totales += p["goles_l_pred"] + p["goles_v_pred"]
-
-            # Resultado real vs predicho
-            sig_real = 1 if p["goles_l_oficial"] > p["goles_v_oficial"] else (
-                -1 if p["goles_l_oficial"] < p["goles_v_oficial"] else 0)
-            sig_pred = 1 if p["goles_l_pred"] > p["goles_v_pred"] else (
-                -1 if p["goles_l_pred"] < p["goles_v_pred"] else 0)
-
-            if sig_real == sig_pred:
-                aciertos_ganador += 1
-            if p["goles_l_oficial"] == p["goles_l_pred"] and p["goles_v_oficial"] == p["goles_v_pred"]:
-                aciertos_exactos += 1
-
-    total_eval = len(partidos_evaluados)
-
-    if total_eval > 0:
-        pct_ganador = (aciertos_ganador / total_eval) * 100
-        pct_exacto = (aciertos_exactos / total_eval) * 100
-
-        # Métricas principales
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Partidos Evaluados", f"{total_eval}")
-        with col2:
-            st.metric("Acierto de Ganador/Empate", f"{pct_ganador:.1f}%", f"{aciertos_ganador} correctos")
-        with col3:
-            st.metric("Marcadores Exactos", f"{aciertos_exactos}", f"{pct_exacto:.1f}% efectividad")
-        with col4:
-            st.metric("Goles Totales (Real vs Pred)", f"{goles_reales_totales}",
-                      f"Predichos: {goles_predichos_totales}")
-
-        # Gráfico comparativo de goles
-        st.write("### Comparativa de Goles por Partido Evaluado")
-        chart_data = []
-        for p in partidos_evaluados:
-            chart_data.append({
-                "Partido": f"{p['local']} vs {p['visitante']}",
-                "Goles Reales": p["goles_l_oficial"] + p["goles_v_oficial"],
-                "Goles Predichos": p["goles_l_pred"] + p["goles_v_pred"]
-            })
-        df_chart = pd.DataFrame(chart_data).set_index("Partido")
-        st.bar_chart(df_chart)
-
-        # Listado detallado de aciertos y fallos
-        st.write("### Desglose de Resultados Evaluados")
-        detalles = []
-        for p in partidos_evaluados:
-            # Evaluar estado
-            es_exacto = p["goles_l_oficial"] == p["goles_l_pred"] and p["goles_v_oficial"] == p["goles_v_pred"]
-            sig_real = 1 if p["goles_l_oficial"] > p["goles_v_oficial"] else (
-                -1 if p["goles_l_oficial"] < p["goles_v_oficial"] else 0)
-            sig_pred = 1 if p["goles_l_pred"] > p["goles_v_pred"] else (
-                -1 if p["goles_l_pred"] < p["goles_v_pred"] else 0)
-            es_ganador = sig_real == sig_pred
-
-            estado = "✅ Exacto" if es_exacto else ("🟢 Ganador/Empate" if es_ganador else "❌ Fallado")
-
-            detalles.append({
-                "Grupo": p["grupo"],
-                "Partido": f"{p['local']} vs {p['visitante']}",
-                "Resultado Oficial": f"{p['goles_l_oficial']} - {p['goles_v_oficial']}",
-                "Tu Predicción": f"{p['goles_l_pred']} - {p['goles_v_pred']}",
-                "Estado": estado
-            })
-        st.table(pd.DataFrame(detalles))
-    else:
-        st.info(
-            "No hay partidos evaluados en este momento. Ingresa resultados oficiales y predicciones en la siguiente pestaña.")
-
-# ================= TAB 2: REGISTRO DE PREDICCIONES =================
+# --- TAB 2: FASE DE GRUPOS ---
 with tab2:
-    st.subheader("Ingresa y edita tus predicciones")
-    st.write(
-        "Selecciona un grupo para registrar tus pronósticos. Los cambios se guardan automáticamente en tu sesión actual.")
+    grupo_sel = st.selectbox("Selecciona un Grupo:", sorted(list(GRUPOS_TEAMS_DYNAMIC.keys())))
+    g_id = grupo_sel.split(" ")[1]
+    
+    c1, c2 = st.columns([1, 1.2])
+    
+    with c1:
+        st.markdown(f"### Tabla Proyectada {grupo_sel}")
+        tabla_path = os.path.join(RESULTS_DIR, f"tabla_mas_probable_{grupo_sel.lower().replace(' ', '_')}.csv")
+        if os.path.exists(tabla_path):
+            df_t = pd.read_csv(tabla_path)
+            df_t['Team'] = df_t['Team'].apply(get_display_name)
+            st.table(df_t.set_index('Pos'))
+        
+        st.markdown("### Probabilidades de Posición")
+        if not df_grupos.empty:
+            equipos_g = GRUPOS_TEAMS_DYNAMIC[grupo_sel]
+            df_g_prob = df_grupos[df_grupos['Team'].isin(equipos_g)].copy()
+            df_g_prob['Team'] = df_g_prob['Team'].apply(get_display_name)
+            st.dataframe(df_g_prob.set_index('Team').style.background_gradient(cmap='Blues', axis=1).format("{:.1f}%"))
 
-    grupo_sel = st.selectbox("Selecciona el Grupo:", list(GRUPOS_TEAMS.keys()))
-    partidos_filtrados = [p for p in st.session_state.partidos if p["grupo"] == grupo_sel]
+    with c2:
+        st.markdown(f"### Partidos Proyectados {grupo_sel}")
+        if not df_matches_all.empty:
+            df_m_g = df_matches_all[df_matches_all['Group'] == g_id]
+            for _, row in df_m_g.iterrows():
+                res_color = "#e8f5e9" if row['Is_Group_Most_Probable'] else "white"
+                st.markdown(f"""
+                <div style='border:1px solid #ddd; padding:8px; border-radius:5px; margin-bottom:5px; background-color:{res_color}'>
+                    <div style='display:flex; justify-content:space-between;'>
+                        <span>{get_display_name(row['Team_A'])}</span>
+                        <b>{int(row['Goals_A'])} - {int(row['Goals_B'])}</b>
+                        <span>{get_display_name(row['Team_B'])}</span>
+                    </div>
+                    <div style='font-size:0.8rem; color:grey; text-align:center;'>Confianza: {row['Score_Probability_Pct']:.1f}%</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-    st.write(f"#### Partidos del {grupo_sel}")
-
-    # Formulario dinámico para evitar sobrecargar los reruns de Streamlit
-    for p in partidos_filtrados:
-        col_local, col_g_l, col_vs, col_g_v, col_visitante, col_oficial = st.columns([3, 1, 0.5, 1, 3, 2])
-
-        with col_local:
-            st.markdown(f"<div style='text-align: right; font-weight: bold;'>{p['local']}</div>", unsafe_html=True)
-
-        with col_g_l:
-            st.number_input(
-                "",
-                min_value=0,
-                max_value=15,
-                value=int(p["goles_l_pred"]) if p["goles_l_pred"] is not None else 0,
-                key=f"l_p_{p['id']}",
-                step=1,
-                label_visibility="collapsed"
-            )
-
-        with col_vs:
-            st.markdown("<div style='text-align: center;'>vs</div>", unsafe_html=True)
-
-        with col_g_v:
-            st.number_input(
-                "",
-                min_value=0,
-                max_value=15,
-                value=int(p["goles_v_pred"]) if p["goles_v_pred"] is not None else 0,
-                key=f"v_p_{p['id']}",
-                step=1,
-                label_visibility="collapsed"
-            )
-
-        with col_visitante:
-            st.markdown(f"<div style='text-align: left; font-weight: bold;'>{p['visitante']}</div>", unsafe_html=True)
-
-        with col_oficial:
-            if p["goles_l_oficial"] is not None:
-                st.success(f"Oficial: {p['goles_l_oficial']} - {p['goles_v_oficial']}")
-            else:
-                st.info("Próximamente")
-        st.markdown("---")
-
-# ================= TAB 3: CLASIFICACIÓN DE GRUPOS =================
+# --- TAB 3: BRACKET ---
 with tab3:
-    st.subheader("Llaves de los Grupos y Posiciones Proyectadas")
-    st.write("Compara la tabla de posiciones oficial frente a la proyectada según tus predicciones.")
+    st.subheader("Camino a la Final")
+    
+    def match_box(m_id):
+        m = bracket_data.get(m_id)
+        if not m: return st.empty()
+        
+        winner = m.get('predicted_winner')
+        score = m.get('predicted_score', '?-?')
+        # Limpieza de score si trae nombres de equipos
+        if winner and winner.lower() in score.lower():
+            # Intentar extraer solo números si es posible
+            import re
+            nums = re.findall(r'\d+', score)
+            if len(nums) >= 2: score = f"{nums[0]} - {nums[1]}"
+            
+        st.markdown(f"""
+        <div class="bracket-match">
+            <div style="font-size:0.8rem; color:gray;">{m_id.replace('M', 'Partido ')}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem;">{m.get('matchup', 'TBD').replace(' vs ', '<br>').title()}</span>
+                <b style="font-size:1.1rem; margin-left:10px;">{score}</b>
+            </div>
+            <div class="match-winner" style="margin-top:5px; border-top:1px solid #eee; padding-top:3px;">
+                🏆 {get_display_name(winner)} ({m.get('winner_probability_pct', 0):.1f}%)
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    grupo_tabla_sel = st.selectbox("Selecciona un grupo para visualizar la tabla:", list(GRUPOS_TEAMS.keys()),
-                                   key="grupo_tabla")
+    col1, col2, col3, col4, col5 = st.columns(5)
+    
+    with col1:
+        st.markdown("<div class='group-header'>1/16 Final</div>", unsafe_allow_html=True)
+        for i in range(73, 81): match_box(f"M{i}")
+    with col2:
+        st.markdown("<div class='group-header'>1/16 Final</div>", unsafe_allow_html=True)
+        for i in range(81, 89): match_box(f"M{i}")
+    with col3:
+        st.markdown("<div class='group-header'>Octavos</div>", unsafe_allow_html=True)
+        for i in range(89, 97): match_box(f"M{i}")
+    with col4:
+        st.markdown("<div class='group-header'>Cuartos</div>", unsafe_allow_html=True)
+        for i in range(97, 101): match_box(f"M{i}")
+    with col5:
+        st.markdown("<div class='group-header'>Finales</div>", unsafe_allow_html=True)
+        match_box("M101")
+        match_box("M102")
+        st.markdown("---")
+        match_box("M104")
+        final_winner = bracket_data.get("M104", {}).get("predicted_winner")
+        if final_winner:
+            st.success(f"### CAMPEÓN: {get_display_name(final_winner)}")
 
-    col_t1, col_t2 = st.columns(2)
-
-    with col_t1:
-        st.write("#### 📊 Tabla Oficial")
-        tabla_oficial = calcular_tabla_grupo(grupo_tabla_sel, st.session_state.partidos, modo="oficial")
-        st.dataframe(tabla_oficial, hide_index=True, use_container_width=True)
-        st.caption("Nota: Solo considera partidos con resultados cargados oficialmente.")
-
-    with col_t2:
-        st.write("#### 🔮 Tabla Proyectada (Con tus predicciones)")
-        tabla_pred = calcular_tabla_grupo(grupo_tabla_sel, st.session_state.partidos, modo="prediccion")
-        st.dataframe(tabla_pred, hide_index=True, use_container_width=True)
-        st.caption("Nota: Combina resultados oficiales con tus predicciones guardadas.")
-
-# ================= TAB 4: FAVORITOS Y CAMPEÓN PROYECTADO =================
+# --- TAB 4: VALIDACIÓN ---
 with tab4:
-    st.subheader("Modelos de Probabilidad y Predicción General")
+    st.subheader("Tu vs La Inteligencia Artificial")
+    
+    all_teams = sorted(list(TEAM_MAPPING_DYNAMIC.values()))
+    c_user, c_ai = st.columns(2)
+    
+    with c_user:
+        tu_campeon = st.selectbox("¿Quién será el Campeón?", all_teams, index=all_teams.index("Argentina") if "Argentina" in all_teams else 0)
+        tu_finalista = st.selectbox("¿Quién pierde la final?", [t for t in all_teams if t != tu_campeon])
+        
+    with c_ai:
+        ai_champ = get_display_name(bracket_data.get("M104", {}).get("predicted_winner"))
+        ai_matchup = bracket_data.get("M104", {}).get("matchup", "").lower()
+        ai_runner = "TBD"
+        if ai_champ.lower() in ai_matchup:
+            parts = ai_matchup.split(" vs ")
+            for p in parts:
+                if get_display_name(p) != ai_champ:
+                    ai_runner = get_display_name(p)
+                    break
+        
+        st.metric("Campeón AI", ai_champ)
+        st.metric("Subcampeón AI", ai_runner)
+        
+    score = 0
+    if tu_campeon == ai_champ: score += 50
+    if tu_finalista == ai_runner: score += 50
+    
+    st.progress(score/100)
+    st.write(f"Tu nivel de coincidencia con el modelo es del **{score}%**")
 
-    col_izq, col_der = st.columns([1, 1])
+# --- TAB 5: MI CALENDARIO & ACIERTOS ---
+with tab5:
+    st.subheader("Predicción de Resultados Paso a Paso")
+    
+    if 'user_results' not in st.session_state:
+        st.session_state.user_results = {}
 
-    with col_izq:
-        st.markdown("""
-        ### 🤖 Simulación de los Modelos de Referencia
-        Antes del inicio del torneo, modelos matemáticos avanzados (como la supercomputadora de **Opta Analyst** y el modelo estadístico de **Goldman Sachs**) simularon el torneo miles de veces, arrojando las siguientes probabilidades de título:
-        """)
+    g_sel_cal = st.selectbox("Selecciona Grupo para rellenar:", sorted(list(GRUPOS_TEAMS_DYNAMIC.keys())), key="cal_g")
+    df_g_cal = df_matches_all[df_matches_all['Group'] == g_sel_cal.split(" ")[1]]
+    
+    hits = 0
+    perfects = 0
+    total_games = 0
+    
+    for _, row in df_g_cal.iterrows():
+        m_id = f"{row['Team_A']}_{row['Team_B']}"
+        c1, c2, c3, c4, c5 = st.columns([2, 1, 0.5, 1, 2])
+        
+        c1.write(get_display_name(row['Team_A']))
+        val_a = st.session_state.user_results.get(f"{m_id}_a", 0)
+        u_a = c2.number_input("", 0, 15, val_a, key=f"in_{m_id}_a", label_visibility="collapsed")
+        
+        c3.write("vs")
+        
+        val_b = st.session_state.user_results.get(f"{m_id}_b", 0)
+        u_b = c4.number_input("", 0, 15, val_b, key=f"in_{m_id}_b", label_visibility="collapsed")
+        c5.write(get_display_name(row['Team_B']))
+        
+        st.session_state.user_results[f"{m_id}_a"] = u_a
+        st.session_state.user_results[f"{m_id}_b"] = u_b
+        
+        # Validación vs AI
+        ai_a, ai_b = int(row['Goals_A']), int(row['Goals_B'])
+        
+        user_win = "A" if u_a > u_b else ("B" if u_b > u_a else "D")
+        ai_win = "A" if ai_a > ai_b else ("B" if ai_b > ai_a else "D")
+        
+        status_text = ""
+        if u_a == ai_a and u_b == ai_b:
+            status_text = "🎯 **¡MARCADOR EXACTO!**"
+            perfects += 1
+            hits += 1
+        elif user_win == ai_win:
+            status_text = "✅ Ganador acertado"
+            hits += 1
+        
+        if status_text:
+            st.caption(status_text)
+        total_games += 1
+        st.divider()
 
-        # Datos basados en el reporte real del modelo de junio de 2026
-        prob_data = {
-            "Selección": ["España", "Francia", "Inglaterra", "Argentina", "Portugal", "Brasil", "Alemania"],
-            "Probabilidad Opta (AI)": ["16.1%", "13.0%", "11.2%", "10.4%", "7.0%", "6.6%", "5.1%"],
-            "Probabilidad Goldman Sachs": ["26.0%", "19.0%", "5.0%", "14.0%", "S/D", "8.0%", "S/D"]
-        }
-        st.table(pd.DataFrame(prob_data))
-        st.caption("S/D: Sin Datos públicos específicos en el informe de Goldman Sachs.")
-
-    with col_der:
-        st.markdown("""
-        ### 🗺️ El Torneo Más Probable (Llaves Proyectadas)
-        De acuerdo con el modelo de simulación de Goldman Sachs, el camino de eliminatorias directas más probable se estructura de la siguiente manera:
-        """)
-
-        st.info("""
-        * **Cuartos de Final Proyectados:**
-          * España vs Turquía
-          * Francia vs Colombia
-          * Argentina vs EE. UU.
-          * Brasil vs Inglaterra
-        * **Semifinales:**
-          * España vs Francia (Ganador: España)
-          * Argentina vs Brasil (Ganador: Argentina)
-        * **Gran Final:**
-          * España vs Argentina
-        * **Campeón Proyectado:** 🏆 España
-        """)
-
-    st.markdown("---")
-    st.write("### 🔮 Tu Predicción Personal del Campeón")
-
-    # Permitir al usuario elegir su propia predicción de campeón de entre todos los participantes
-    todos_equipos = sorted(list(set([team for teams in GRUPOS_TEAMS.values() for team in teams])))
-
-    col_campeon_1, col_campeon_2 = st.columns(2)
-    with col_campeon_1:
-        mi_campeon = st.selectbox("Selecciona tu selección favorita a Campeón:", todos_equipos,
-                                  index=todos_equipos.index("Argentina"))
-        nivel_confianza = st.slider("Tu nivel de confianza en esta predicción (%):", min_value=0, max_value=100,
-                                    value=75)
-
-    with col_campeon_2:
-        st.write("#### Resumen de tu Pronóstico:")
-        st.success(f"🏆 Has seleccionado a **{mi_campeon}** para coronarse Campeón del Mundo.")
-        st.write(f"Tu grado de seguridad es del **{nivel_confianza}%**.")
-        if nivel_confianza > 80:
-            st.caption("¡Tienes una confianza muy alta en esta selección!")
-        elif nivel_confianza < 40:
-            st.caption("Tu predicción es reservada. Sabes que el Mundial de 48 equipos depara muchas sorpresas.")
+    st.sidebar.header("🏆 Tu Puntuación")
+    st.sidebar.metric("Aciertos (Ganador)", f"{hits}/{total_games}")
+    st.sidebar.metric("Marcadores Exactos", f"{perfects}")
+    if total_games > 0:
+        st.sidebar.progress(hits/total_games)
