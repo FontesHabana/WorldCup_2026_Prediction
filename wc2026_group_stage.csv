@@ -1,0 +1,73 @@
+match_id,group,date_cuba,home_name,home_code,home_emoji,home_color,away_name,away_code,away_emoji,away_color,result
+1,A,2026-06-11 15:00,Mexico,MEX,🇲🇽,#006847,South Africa,RSA,🇿🇦,#007A4D,2-0
+2,A,2026-06-11 18:00,South Korea,KOR,🇰🇷,#CD2E3A,Czechia,CZE,🇨🇿,#D7141A,2-1
+3,A,2026-06-18 12:00,Czechia,CZE,🇨🇿,#D7141A,South Africa,RSA,🇿🇦,#007A4D,1-1
+4,A,2026-06-18 21:00,Mexico,MEX,🇲🇽,#006847,South Korea,KOR,🇰🇷,#CD2E3A,1-0
+5,A,2026-06-24 21:00,Czechia,CZE,🇨🇿,#D7141A,Mexico,MEX,🇲🇽,#006847,0-3
+6,A,2026-06-24 21:00,South Africa,RSA,🇿🇦,#007A4D,South Korea,KOR,🇰🇷,#CD2E3A,1-0
+7,B,2026-06-12 15:00,Canada,CAN,🇨🇦,#FF0000,Bosnia and Herzegovina,BIH,🇧🇦,#002395,1-1
+8,B,2026-06-13 15:00,Qatar,QAT,🇶🇦,#8D153A,Switzerland,SUI,🇨🇭,#FF0000,1-1
+9,B,2026-06-18 15:00,Switzerland,SUI,🇨🇭,#FF0000,Bosnia and Herzegovina,BIH,🇧🇦,#002395,4-1
+10,B,2026-06-18 18:00,Canada,CAN,🇨🇦,#FF0000,Qatar,QAT,🇶🇦,#8D153A,6-0
+11,B,2026-06-24 15:00,Switzerland,SUI,🇨🇭,#FF0000,Canada,CAN,🇨🇦,#FF0000,2-1
+12,B,2026-06-24 15:00,Bosnia and Herzegovina,BIH,🇧🇦,#002395,Qatar,QAT,🇶🇦,#8D153A,3-1
+13,C,2026-06-13 18:00,Brazil,BRA,🇧🇷,#009C3B,Morocco,MAR,      ,#C1272D,1-1
+14,C,2026-06-13 21:00,Haiti,HAI,🇭🇹,#00209F,Scotland,SCO,🏴󠁧󠁢󠁳󠁣󠁴󠁿,#003865,0-1
+15,C,2026-06-19 18:00,Scotland,SCO,🏴󠁧󠁢󠁳󠁣󠁴󠁿,#003865,Morocco,MAR,🇲🇦,#C1272D,0-1
+16,C,2026-06-19 20:30,Brazil,BRA,🇧🇷,#009C3B,Haiti,HAI,🇭🇹,#00209F,3-0
+17,C,2026-06-24 18:00,Scotland,SCO,🏴󠁧󠁢󠁳󠁣󠁴󠁿,#003865,Brazil,BRA,🇧🇷,#009C3B,0-3
+18,C,2026-06-24 18:00,Morocco,MAR,🇲🇦,#C1272D,Haiti,HAI,🇭🇹,#00209F,4-2
+19,D,2026-06-12 21:00,USA,USA,🇺🇸,#B22234,Paraguay,PAR,🇵🇾,#D52B1E,4-1
+20,D,2026-06-14 00:00,Australia,AUS,🇦🇺,#00843D,Türkiye,TUR,🇹🇷,#E30A17,2-0
+21,D,2026-06-19 15:00,USA,USA,🇺🇸,#B22234,Australia,AUS,🇦🇺,#00843D,2-0
+22,D,2026-06-19 23:00,Türkiye,TUR,🇹🇷,#E30A17,Paraguay,PAR,🇵🇾,#D52B1E,0-1
+23,D,2026-06-25 22:00,Türkiye,TUR,🇹🇷,#E30A17,USA,USA,🇺🇸,#B22234,3-2
+24,D,2026-06-25 22:00,Paraguay,PAR,🇵🇾,#D52B1E,Australia,AUS,🇦🇺,#00843D,0-0
+25,E,2026-06-14 13:00,Germany,GER,🇩🇪,#000000,Curacao,CUW,🇨🇼,#002B7F,7-1
+26,E,2026-06-14 19:00,Ivory Coast,CIV,🇨🇮,#F77F00,Ecuador,ECU,🇪🇨,#FFD100,1-0
+27,E,2026-06-20 16:00,Germany,GER,🇩🇪,#000000,Ivory Coast,CIV,🇨🇮,#F77F00,2-1
+28,E,2026-06-20 20:00,Ecuador,ECU,🇪🇨,#FFD100,Curacao,CUW,🇨🇼,#002B7F,0-0
+29,E,2026-06-25 16:00,Curacao,CUW,🇨🇼,#002B7F,Ivory Coast,CIV,🇨🇮,#F77F00,0-2
+30,E,2026-06-25 16:00,Ecuador,ECU,🇪🇨,#FFD100,Germany,GER,🇩🇪,#000000,2-1
+31,F,2026-06-14 16:00,Netherlands,NED,🇳🇱,#FF4F00,Japan,JPN,🇯🇵,#BC002D,2-2
+32,F,2026-06-14 22:00,Sweden,SWE,🇸🇪,#006AA7,Tunisia,TUN,🇹🇳,#E70013,5-1
+33,F,2026-06-20 13:00,Netherlands,NED,🇳🇱,#FF4F00,Sweden,SWE,🇸🇪,#006AA7,5-1
+34,F,2026-06-21 00:00,Tunisia,TUN,🇹🇳,#E70013,Japan,JPN,🇯🇵,#BC002D,0-4
+35,F,2026-06-25 19:00,Japan,JPN,🇯🇵,#BC002D,Sweden,SWE,🇸🇪,#006AA7,1-1
+36,F,2026-06-25 19:00,Tunisia,TUN,🇹🇳,#E70013,Netherlands,NED,🇳🇱,#FF4F00,1-3
+37,G,2026-06-15 15:00,Belgium,BEL,🇧🇪,#EF3340,Egypt,EGY,🇪🇬,#CE1126,1-1
+38,G,2026-06-15 21:00,Iran,IRN,🇮🇷,#239F40,New Zealand,NZL,🇳🇿,#00247D,2-2
+39,G,2026-06-21 15:00,Belgium,BEL,🇧🇪,#EF3340,Iran,IRN,🇮🇷,#239F40,0-0
+40,G,2026-06-21 21:00,New Zealand,NZL,🇳🇿,#00247D,Egypt,EGY,🇪🇬,#CE1126,1-3
+41,G,2026-06-26 23:00,Egypt,EGY,🇪🇬,#CE1126,Iran,IRN,🇮🇷,#239F40,1-1
+42,G,2026-06-26 23:00,New Zealand,NZL,🇳🇿,#00247D,Belgium,BEL,🇧🇪,#EF3340,1-5
+43,H,2026-06-15 12:00,Spain,ESP,🇪🇸,#AA151B,Cape Verde,CPV,🇨🇻,#003893,0-0
+44,H,2026-06-15 18:00,Saudi Arabia,KSA,🇸🇦,#006C35,Uruguay,URU,🇺🇾,#75AADB,1-1
+45,H,2026-06-21 12:00,Spain,ESP,🇪🇸,#AA151B,Saudi Arabia,KSA,🇸🇦,#006C35,4-0
+46,H,2026-06-21 18:00,Uruguay,URU,🇺🇾,#75AADB,Cape Verde,CPV,🇨🇻,#003893,2-2
+47,H,2026-06-26 20:00,Cape Verde,CPV,🇨🇻,#003893,Saudi Arabia,KSA,🇸🇦,#006C35,0-0
+48,H,2026-06-26 20:00,Uruguay,URU,🇺🇾,#75AADB,Spain,ESP,🇪🇸,#AA151B,0-1
+49,I,2026-06-16 15:00,France,FRA,🇫🇷,#002395,Senegal,SEN,🇸🇳,#00853F,3-1
+50,I,2026-06-16 18:00,Iraq,IRQ,🇮🇶,#007A3D,Norway,NOR,🇳🇴,#EF2B2D,1-4
+51,I,2026-06-22 17:00,France,FRA,🇫🇷,#002395,Iraq,IRQ,🇮🇶,#007A3D,3-0
+52,I,2026-06-22 20:00,Norway,NOR,🇳🇴,#EF2B2D,Senegal,SEN,🇸🇳,#00853F,3-2
+53,I,2026-06-26 15:00,Norway,NOR,🇳🇴,#EF2B2D,France,FRA,🇫🇷,#002395,1-4
+54,I,2026-06-26 15:00,Senegal,SEN,🇸🇳,#00853F,Iraq,IRQ,🇮🇶,#007A3D,5-0
+55,J,2026-06-16 21:00,Argentina,ARG,🇦🇷,#74ACDF,Algeria,ALG,🇩🇿,#006233,3-0
+56,J,2026-06-17 00:00,Austria,AUT,🇦🇹,#ED2939,Jordan,JOR,🇯🇴,#007A3D,3-1
+57,J,2026-06-22 13:00,Argentina,ARG,🇦🇷,#74ACDF,Austria,AUT,🇦🇹,#ED2939,2-0
+58,J,2026-06-22 23:00,Jordan,JOR,🇯🇴,#007A3D,Algeria,ALG,🇩🇿,#006233,1-2
+59,J,2026-06-27 22:00,Algeria,ALG,🇩🇿,#006233,Austria,AUT,🇦🇹,#ED2939,3-3
+60,J,2026-06-27 22:00,Jordan,JOR,🇯🇴,#007A3D,Argentina,ARG,🇦🇷,#74ACDF,1-3
+61,K,2026-06-17 13:00,Portugal,POR,🇵🇹,#006600,DR Congo,COD,🇨🇩,#007FFF,1-1
+62,K,2026-06-17 22:00,Uzbekistan,UZB,🇺🇿,#1EB53A,Colombia,COL,🇨🇴,#FCD116,1-3
+63,K,2026-06-23 13:00,Portugal,POR,🇵🇹,#006600,Uzbekistan,UZB,🇺🇿,#1EB53A,5-0
+64,K,2026-06-23 22:00,Colombia,COL,🇨🇴,#FCD116,DR Congo,COD,🇨🇩,#007FFF,1-0
+65,K,2026-06-27 19:30,Colombia,COL,🇨🇴,#FCD116,Portugal,POR,🇵🇹,#006600,0-0
+66,K,2026-06-27 19:30,DR Congo,COD,🇨🇩,#007FFF,Uzbekistan,UZB,🇺🇿,#1EB53A,3-1
+67,L,2026-06-17 16:00,England,ENG,🏴󠁧󠁢󠁥󠁮󠁧󠁿,#CF081F,Croatia,CRO,🇭🇷,#FF0000,4-2
+68,L,2026-06-17 19:00,Ghana,GHA,🇬🇭,#006B3F,Panama,PAN,🇵🇦,#DA121A,1-0
+69,L,2026-06-23 16:00,England,ENG,🏴󠁧󠁢󠁥󠁮󠁧󠁿,#CF081F,Ghana,GHA,🇬🇭,#006B3F,0-0
+70,L,2026-06-23 19:00,Panama,PAN,🇵🇦,#DA121A,Croatia,CRO,🇭🇷,#FF0000,0-1
+71,L,2026-06-27 17:00,Panama,PAN,🇵🇦,#DA121A,England,ENG,🏴󠁧󠁢󠁥󠁮󠁧󠁿,#CF081F,0-2
+72,L,2026-06-27 17:00,Croatia,CRO,🇭🇷,#FF0000,Ghana,GHA,🇬🇭,#006B3F,2-1

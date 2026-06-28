@@ -1,0 +1,73 @@
+Group,Team_A,Team_B,Goals_A,Goals_B,Score_Probability_Pct,Win_A_Probability_Pct,Win_B_Probability_Pct,Draw_Probability_Pct,Is_Group_Most_Probable
+A,mexico,south korea,1,0,16.34,51.95,22.8,25.25,False
+A,czech republic,south korea,0,1,16.12,27.3,44.04,28.67,False
+A,south africa,south korea,0,1,27.4,19.27,58.23,22.5,False
+A,czech republic,mexico,0,1,27.87,7.17,75.44,17.39,False
+A,mexico,south africa,1,0,40.8,87.71,3.79,8.49,True
+A,czech republic,south africa,1,0,30.38,59.79,14.06,26.15,False
+B,canada,switzerland,0,1,18.43,2.33,85.09,12.58,False
+B,bosnia and herzegovina,switzerland,0,1,17.68,1.01,89.86,9.12,False
+B,qatar,switzerland,0,2,15.09,0.47,95.16,4.37,False
+B,bosnia and herzegovina,canada,0,1,21.7,15.33,63.46,21.21,True
+B,canada,qatar,1,0,17.35,68.42,12.03,19.54,False
+B,bosnia and herzegovina,qatar,1,0,14.57,60.13,15.03,24.84,False
+C,brazil,morocco,1,0,31.22,81.53,4.18,14.3,False
+C,brazil,scotland,1,0,22.24,96.67,0.39,2.93,False
+C,brazil,haiti,3,0,17.62,99.64,0.0,0.36,False
+C,morocco,scotland,1,0,33.52,82.71,4.26,13.03,True
+C,haiti,morocco,0,2,24.31,0.06,98.72,1.22,False
+C,haiti,scotland,0,1,24.0,0.67,93.61,5.72,False
+D,turkey,united states,1,1,15.54,42.61,24.04,33.35,False
+D,paraguay,turkey,0,1,13.35,32.37,40.02,27.61,False
+D,australia,turkey,0,1,14.61,22.22,53.17,24.61,False
+D,paraguay,united states,1,0,16.21,38.16,33.13,28.71,False
+D,australia,united states,0,1,24.09,16.73,59.99,23.29,False
+D,australia,paraguay,0,1,24.51,14.75,58.5,26.75,True
+E,ecuador,germany,0,1,17.05,12.16,60.37,27.47,False
+E,germany,ivory coast,2,1,14.48,82.23,3.09,14.67,False
+E,curacao,germany,0,1,16.15,3.35,81.91,14.74,False
+E,ecuador,ivory coast,1,0,30.4,74.51,9.83,15.66,True
+E,curacao,ecuador,0,1,26.83,14.65,60.39,24.96,False
+E,curacao,ivory coast,0,1,13.94,31.04,41.42,27.54,False
+F,netherlands,tunisia,1,0,21.78,86.1,3.39,10.51,True
+F,netherlands,sweden,1,0,17.33,87.37,3.2,9.44,False
+F,japan,netherlands,0,1,16.99,6.72,76.45,16.83,False
+F,sweden,tunisia,0,1,17.91,23.13,48.55,28.32,False
+F,japan,tunisia,1,0,16.7,47.37,29.4,23.23,False
+F,japan,sweden,1,0,16.2,55.73,18.36,25.91,False
+G,iran,new zealand,1,0,23.35,68.44,11.35,20.2,False
+G,egypt,new zealand,1,0,25.0,88.64,1.44,9.92,True
+G,belgium,new zealand,2,0,18.61,96.35,0.31,3.34,False
+G,egypt,iran,1,0,22.19,56.22,16.05,27.73,False
+G,belgium,iran,1,0,24.47,94.56,1.02,4.42,False
+G,belgium,egypt,1,0,18.89,65.75,12.17,22.07,False
+H,spain,uruguay,1,0,21.77,76.16,6.23,17.61,False
+H,saudi arabia,spain,0,2,22.38,0.09,97.57,2.34,False
+H,cape verde,spain,0,2,19.18,0.03,97.86,2.11,False
+H,saudi arabia,uruguay,0,1,33.37,0.79,91.94,7.27,True
+H,cape verde,uruguay,0,1,26.43,0.48,93.44,6.07,False
+H,cape verde,saudi arabia,0,1,26.23,13.96,55.51,30.54,False
+I,france,norway,1,0,20.2,95.92,0.31,3.76,False
+I,france,senegal,1,0,27.63,93.46,0.85,5.69,False
+I,france,iraq,2,0,23.56,98.44,0.03,1.53,False
+I,norway,senegal,0,1,16.1,22.61,48.63,28.76,False
+I,iraq,norway,0,1,26.82,5.03,79.39,15.58,False
+I,iraq,senegal,0,1,33.09,1.69,88.83,9.48,True
+J,argentina,austria,1,0,22.31,81.76,3.69,14.56,False
+J,algeria,argentina,0,1,24.23,1.34,89.32,9.33,True
+J,argentina,jordan,2,0,18.75,96.81,0.06,3.12,False
+J,algeria,austria,0,1,14.73,16.23,53.36,30.4,False
+J,austria,jordan,2,0,17.45,92.16,0.66,7.17,False
+J,algeria,jordan,1,0,17.7,88.05,1.55,10.39,False
+K,colombia,portugal,0,1,17.92,25.97,48.32,25.71,False
+K,colombia,uzbekistan,1,0,22.3,95.32,0.31,4.38,False
+K,colombia,dr congo,1,0,24.3,93.36,0.61,6.04,True
+K,portugal,uzbekistan,2,0,20.51,98.17,0.06,1.77,False
+K,dr congo,portugal,0,2,20.73,0.21,96.61,3.18,False
+K,dr congo,uzbekistan,1,1,16.29,31.08,33.31,35.62,False
+L,croatia,england,1,1,14.29,26.65,43.29,30.06,False
+L,croatia,ghana,1,0,18.48,87.01,2.35,10.64,False
+L,croatia,panama,2,0,18.43,96.79,0.24,2.97,False
+L,england,ghana,1,0,18.79,88.67,1.46,9.87,False
+L,england,panama,2,0,19.25,97.22,0.13,2.66,True
+L,ghana,panama,1,0,17.92,82.49,4.98,12.54,False

@@ -340,8 +340,9 @@ class TournamentAggregator:
     def generate_most_probable_matches_per_group_report(self) -> pd.DataFrame:
         """
         Para cada grupo, recopila todos los enfrentamientos y determina su marcador más probable.
-        Calcula cuál es el partido más predecible (con mayor probabilidad de marcador exacto) por grupo.
-        Retorna un DataFrame de Pandas listo para ser exportado a CSV con equipos y goles en columnas separadas.
+        Calcula la probabilidad de victoria de cada equipo, de empate y cuál es el partido
+        más predecible (con mayor probabilidad de marcador exacto) por grupo.
+        Retorna un DataFrame de Pandas listo para ser exportado a CSV.
         """
         group_fixtures = defaultdict(list)
 
@@ -354,21 +355,44 @@ class TournamentAggregator:
             if total_matches == 0:
                 continue
 
-            # Encontrar el marcador más común y su probabilidad
+            # Inicializar contadores para los resultados globales
+            win_a_count = 0
+            win_b_count = 0
+            draw_count = 0
+
+            # Procesar los marcadores registrados
             if stats["scores"]:
+                # Obtener el marcador más común y su frecuencia
                 most_common_score, score_freq = stats["scores"].most_common(1)[0]
-                prob_pct = round((score_freq / total_matches) * 100, 2)
+                score_prob_pct = round((score_freq / total_matches) * 100, 2)
                 goals_a, goals_b = most_common_score
+
+                # Calcular frecuencias de victoria y empate
+                for (g_a, g_b), freq in stats["scores"].items():
+                    if g_a > g_b:
+                        win_a_count += freq
+                    elif g_b > g_a:
+                        win_b_count += freq
+                    else:
+                        draw_count += freq
             else:
                 goals_a, goals_b = 0, 0
-                prob_pct = 0.0
+                score_prob_pct = 0.0
+
+            # Calcular porcentajes finales de resultados
+            win_a_pct = round((win_a_count / total_matches) * 100, 2)
+            win_b_pct = round((win_b_count / total_matches) * 100, 2)
+            draw_pct = round((draw_count / total_matches) * 100, 2)
 
             group_fixtures[group_name].append({
                 "Team_A": team_a,
                 "Team_B": team_b,
                 "Goals_A": goals_a,
                 "Goals_B": goals_b,
-                "Score_Probability_Pct": prob_pct
+                "Score_Probability_Pct": score_prob_pct,
+                "Win_A_Probability_Pct": win_a_pct,
+                "Win_B_Probability_Pct": win_b_pct,
+                "Draw_Probability_Pct": draw_pct
             })
 
         # Determinar el partido más probable por grupo
@@ -376,6 +400,7 @@ class TournamentAggregator:
         for group_name, matches in sorted(group_fixtures.items()):
             if not matches:
                 continue
+
             # Encontrar el partido con la mayor probabilidad de marcador exacto en este grupo
             highest_prob_match = max(matches, key=lambda x: x["Score_Probability_Pct"])
 
@@ -391,6 +416,9 @@ class TournamentAggregator:
                     "Goals_A": m["Goals_A"],
                     "Goals_B": m["Goals_B"],
                     "Score_Probability_Pct": m["Score_Probability_Pct"],
+                    "Win_A_Probability_Pct": m["Win_A_Probability_Pct"],
+                    "Win_B_Probability_Pct": m["Win_B_Probability_Pct"],
+                    "Draw_Probability_Pct": m["Draw_Probability_Pct"],
                     "Is_Group_Most_Probable": is_most_probable_in_group
                 })
 

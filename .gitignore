@@ -224,7 +224,6 @@ models_saved
 data/raw/
 data/processed/
 data/external/
-*.csv
 *.json
 *.parquet
 
@@ -270,7 +269,6 @@ Thumbs.db
 
 
 stateSave
-
 
 
 AGENTS.md

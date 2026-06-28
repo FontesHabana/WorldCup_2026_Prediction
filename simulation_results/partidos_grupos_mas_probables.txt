@@ -1,0 +1,96 @@
+
+⚽ A ⚽
+  - mexico 1 - 0 south korea
+  - czech republic 0 - 1 south korea
+  - south africa 0 - 1 south korea
+  - czech republic 0 - 1 mexico
+  - mexico 1 - 0 south africa
+  - czech republic 1 - 0 south africa
+
+⚽ B ⚽
+  - canada 0 - 1 switzerland
+  - bosnia and herzegovina 0 - 1 switzerland
+  - qatar 0 - 2 switzerland
+  - bosnia and herzegovina 0 - 1 canada
+  - canada 1 - 0 qatar
+  - bosnia and herzegovina 1 - 0 qatar
+
+⚽ C ⚽
+  - brazil 1 - 0 morocco
+  - brazil 1 - 0 scotland
+  - brazil 3 - 0 haiti
+  - morocco 1 - 0 scotland
+  - haiti 0 - 2 morocco
+  - haiti 0 - 1 scotland
+
+⚽ D ⚽
+  - turkey 1 - 1 united states
+  - paraguay 0 - 1 turkey
+  - australia 0 - 1 turkey
+  - paraguay 1 - 0 united states
+  - australia 0 - 1 united states
+  - australia 0 - 1 paraguay
+
+⚽ E ⚽
+  - ecuador 0 - 1 germany
+  - germany 2 - 1 ivory coast
+  - curacao 0 - 1 germany
+  - ecuador 1 - 0 ivory coast
+  - curacao 0 - 1 ecuador
+  - curacao 0 - 1 ivory coast
+
+⚽ F ⚽
+  - netherlands 1 - 0 tunisia
+  - netherlands 1 - 0 sweden
+  - japan 0 - 1 netherlands
+  - sweden 0 - 1 tunisia
+  - japan 1 - 0 tunisia
+  - japan 1 - 0 sweden
+
+⚽ G ⚽
+  - iran 1 - 0 new zealand
+  - egypt 1 - 0 new zealand
+  - belgium 2 - 0 new zealand
+  - egypt 1 - 0 iran
+  - belgium 1 - 0 iran
+  - belgium 1 - 0 egypt
+
+⚽ H ⚽
+  - spain 1 - 0 uruguay
+  - saudi arabia 0 - 2 spain
+  - cape verde 0 - 2 spain
+  - saudi arabia 0 - 1 uruguay
+  - cape verde 0 - 1 uruguay
+  - cape verde 0 - 1 saudi arabia
+
+⚽ I ⚽
+  - france 1 - 0 norway
+  - france 1 - 0 senegal
+  - france 2 - 0 iraq
+  - norway 0 - 1 senegal
+  - iraq 0 - 1 norway
+  - iraq 0 - 1 senegal
+
+⚽ J ⚽
+  - argentina 1 - 0 austria
+  - algeria 0 - 1 argentina
+  - argentina 2 - 0 jordan
+  - algeria 0 - 1 austria
+  - austria 2 - 0 jordan
+  - algeria 1 - 0 jordan
+
+⚽ K ⚽
+  - colombia 0 - 1 portugal
+  - colombia 1 - 0 uzbekistan
+  - colombia 1 - 0 dr congo
+  - portugal 2 - 0 uzbekistan
+  - dr congo 0 - 2 portugal
+  - dr congo 1 - 1 uzbekistan
+
+⚽ L ⚽
+  - croatia 1 - 1 england
+  - croatia 1 - 0 ghana
+  - croatia 2 - 0 panama
+  - england 1 - 0 ghana
+  - england 2 - 0 panama
+  - ghana 1 - 0 panama

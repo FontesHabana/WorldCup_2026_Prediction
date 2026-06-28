@@ -72,8 +72,9 @@ class MonteCarloEngine:
         if "Team" in df_agg.columns:
             df_agg = df_agg.set_index("Team")
 
-        df_agg = df_agg[stages_order]
+        df_agg=df_agg[stages_order]
         return df_agg.round(2)
+
 
     def get_group_standings_report(self) -> pd.DataFrame:
         """Genera el reporte probabilístico de clasificación de grupos delegando al agregador."""
