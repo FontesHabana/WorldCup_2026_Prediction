@@ -1,0 +1,33 @@
+Match_ID,Stage,Team_A,Team_B,Matchup_Probability_Pct,Most_Probable_Score,Score_Prob_Within_Matchup_Pct,Predicted_Winner_Overall,Winner_Prob_Within_Matchup_Pct,Penalty_Probability_Pct,Most_Likely_Penalty_Winner,Penalty_Winner_Confidence_Pct
+M73,Round of 32,germany,paraguay,100.0,germany 1 - 0 paraguay,16.99,germany,87.2,19.99,germany,50.06
+M74,Round of 32,france,sweden,100.0,france 1 - 0 sweden,22.11,france,94.94,9.01,france,50.13
+M75,Round of 32,canada,south africa,100.0,canada 1 - 0 south africa,25.08,canada,62.47,25.44,south africa,50.06
+M76,Round of 32,morocco,netherlands,100.0,morocco 0 - 1 netherlands,18.96,netherlands,69.64,34.37,morocco,50.19
+M77,Round of 32,croatia,portugal,100.0,croatia 0 - 1 portugal,17.01,portugal,75.59,28.47,portugal,50.26
+M78,Round of 32,austria,spain,100.0,austria 0 - 1 spain,17.8,spain,91.97,11.61,austria,50.24
+M79,Round of 32,bosnia and herzegovina,united states,100.0,bosnia and herzegovina 0 - 1 united states,22.84,united states,81.56,18.49,bosnia and herzegovina,50.63
+M80,Round of 32,belgium,senegal,100.0,belgium 1 - 0 senegal,20.58,belgium,82.8,25.14,senegal,50.23
+M81,Round of 32,brazil,japan,100.0,brazil 1 - 0 japan,20.05,brazil,88.08,20.56,brazil,50.89
+M82,Round of 32,ivory coast,norway,100.0,ivory coast 1 - 0 norway,15.21,ivory coast,71.67,28.77,ivory coast,50.33
+M83,Round of 32,ecuador,mexico,100.0,ecuador 0 - 0 mexico,21.54,mexico,55.51,39.08,mexico,50.34
+M84,Round of 32,dr congo,england,100.0,dr congo 0 - 1 england,18.88,england,92.44,13.82,dr congo,50.11
+M85,Round of 32,argentina,cape verde,100.0,argentina 1 - 0 cape verde,21.92,argentina,97.81,4.23,argentina,50.72
+M86,Round of 32,australia,egypt,100.0,australia 0 - 1 egypt,18.25,egypt,59.98,27.02,egypt,50.33
+M87,Round of 32,algeria,switzerland,100.0,algeria 0 - 1 switzerland,18.51,switzerland,80.52,20.32,algeria,50.15
+M88,Round of 32,colombia,ghana,100.0,colombia 1 - 0 ghana,21.48,colombia,89.87,17.28,colombia,50.0
+M89,Round of 16,france,germany,82.76,france 1 - 0 germany,15.16,france,77.9,25.46,germany,50.37
+M90,Round of 16,canada,netherlands,43.57,canada 0 - 1 netherlands,16.69,netherlands,89.57,14.9,netherlands,51.17
+M91,Round of 16,portugal,spain,69.55,portugal 1 - 1 spain,17.05,spain,60.42,39.29,spain,50.34
+M92,Round of 16,belgium,united states,67.5,belgium 1 - 0 united states,22.36,belgium,90.07,13.4,belgium,50.82
+M93,Round of 16,brazil,ivory coast,63.15,brazil 1 - 0 ivory coast,22.86,brazil,96.77,4.64,brazil,50.15
+M94,Round of 16,england,mexico,51.22,england 1 - 0 mexico,16.57,england,71.33,29.85,england,50.03
+M95,Round of 16,argentina,egypt,58.66,argentina 1 - 0 egypt,26.52,argentina,90.09,14.66,egypt,50.37
+M96,Round of 16,colombia,switzerland,72.4,colombia 1 - 0 switzerland,18.01,colombia,69.07,24.9,colombia,50.03
+M97,Quarter-Finals,france,netherlands,46.9,france 1 - 1 netherlands,17.19,france,74.07,38.27,netherlands,50.65
+M98,Quarter-Finals,belgium,spain,45.21,belgium 0 - 1 spain,16.57,spain,80.99,27.03,belgium,50.12
+M99,Quarter-Finals,brazil,england,52.31,brazil 1 - 0 england,19.46,brazil,73.34,28.71,brazil,50.0
+M100,Quarter-Finals,argentina,colombia,57.22,argentina 0 - 0 colombia,22.16,argentina,56.74,44.91,colombia,50.33
+M101,Semi-Finals,france,spain,30.7,france 1 - 1 spain,17.55,spain,50.68,39.53,spain,50.73
+M102,Semi-Finals,argentina,brazil,39.35,argentina 0 - 1 brazil,16.49,brazil,57.58,24.56,argentina,50.31
+M103,Third Place Playoff,argentina,france,6.88,argentina 0 - 1 france,18.4,france,61.4,29.28,france,50.17
+M104,Final,brazil,spain,13.76,brazil 0 - 1 spain,14.68,spain,63.09,26.63,spain,50.22
