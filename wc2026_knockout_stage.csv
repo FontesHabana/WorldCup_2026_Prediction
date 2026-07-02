@@ -1,16 +1,16 @@
 Match_ID,Team_A,Team_B,Goals_A,Goals_B,Winner
 M73,germany,paraguay,1,1,paraguay
-M74,france,sweden,,,
+M74,france,sweden,3,0,france
 M75,canada,south africa,1,0,canada
 M76,morocco,netherlands,1,1,morocco
 M77,croatia,portugal,,,
 M78,austria,spain,,,
-M79,bosnia and herzegovina,united states,,,
-M80,belgium,senegal,,,
+M79,bosnia and herzegovina,united states,0,2,united states
+M80,belgium,senegal,3,2,belgium
 M81,brazil,japan,2,1,brazil
 M82,ivory coast,norway,1,2,norway
-M83,ecuador,mexico,,,
-M84,dr congo,england,,,
+M83,ecuador,mexico,0,2,mexico
+M84,dr congo,england,1,2,
 M85,argentina,cape verde,,,
 M86,australia,egypt,,,
 M87,algeria,switzerland,,,
