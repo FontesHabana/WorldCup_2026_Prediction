@@ -3,24 +3,24 @@ M73,germany,paraguay,1,1,paraguay
 M74,france,sweden,3,0,france
 M75,canada,south africa,1,0,canada
 M76,morocco,netherlands,1,1,morocco
-M77,croatia,portugal,,,
-M78,austria,spain,,,
+M77,croatia,portugal,1,2,portugal
+M78,austria,spain,0,3,spain
 M79,bosnia and herzegovina,united states,0,2,united states
 M80,belgium,senegal,3,2,belgium
 M81,brazil,japan,2,1,brazil
 M82,ivory coast,norway,1,2,norway
 M83,ecuador,mexico,0,2,mexico
-M84,dr congo,england,1,2,
-M85,argentina,cape verde,,,
-M86,australia,egypt,,,
-M87,algeria,switzerland,,,
-M88,colombia,ghana,,,
-M89,france,germany,,,
-M90,canada,morocco,,,
-M91,portugal,spain,,,
-M92,belgium,united states,,,
-M93,brazil,ivory coast,,,
-M94,england,mexico,,,
+M84,dr congo,england,1,2,england
+M85,argentina,cape verde,3,2,argentina
+M86,australia,egypt,1,1,egypt
+M87,algeria,switzerland,0,2,switzerland
+M88,colombia,ghana,1,0,colombia
+M89,france,paraguay,1,0,france
+M90,canada,morocco,0,3,morocco
+M91,portugal,spain,0,1,spain
+M92,belgium,united states,4,1,belgium
+M93,brazil,norway,1,2,norway
+M94,england,mexico,3,2,england
 M95,argentina,egypt,,,
 M96,colombia,switzerland,,,
 M97,france,netherlands,,,
