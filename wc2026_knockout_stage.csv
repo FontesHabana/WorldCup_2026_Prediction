@@ -21,14 +21,14 @@ M91,portugal,spain,0,1,spain
 M92,belgium,united states,4,1,belgium
 M93,brazil,norway,1,2,norway
 M94,england,mexico,3,2,england
-M95,argentina,egypt,,,
-M96,colombia,switzerland,,,
-M97,france,netherlands,,,
-M98,belgium,portugal,,,
-M99,brazil,england,,,
-M100,argentina,colombia,,,
-M101,france,portugal,,,
-M102,argentina,brazil,,,
+M95,argentina,egypt,3,2,argentina
+M96,colombia,switzerland,0,0,switzerland
+M97,france,morocco,2,0,france
+M98,belgium,spain,1,2,spain
+M99,norway,england,1,2,england
+M100,argentina,switzerland,3,1,argentina
+M101,france,spain,,,
+M102,argentina,england,,,
 M103,argentina,portugal,,,
 M104,brazil,france,,,
 
