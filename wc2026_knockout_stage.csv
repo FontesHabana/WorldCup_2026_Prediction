@@ -27,10 +27,10 @@ M97,france,morocco,2,0,france
 M98,belgium,spain,1,2,spain
 M99,norway,england,1,2,england
 M100,argentina,switzerland,3,1,argentina
-M101,france,spain,,,
-M102,argentina,england,,,
-M103,argentina,portugal,,,
-M104,brazil,france,,,
+M101,france,spain,0,2,spain
+M102,argentina,england,2,1,argentina
+M103,france,england,4,6,england
+M104,argentina,spain,0,1,spain
 
 
 

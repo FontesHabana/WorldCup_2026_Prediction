@@ -99,6 +99,10 @@ def fit(df: pd.DataFrame) -> dict:
         np.array([0.1])  # Rho inicial
     ])
 
+
+
+
+
     # Llamada al optimizador (ahora correrá órdenes de magnitud más rápido)
     result = minimize(
         fun=neg_log_likelihood_vectorized,
@@ -107,6 +111,8 @@ def fit(df: pd.DataFrame) -> dict:
         method="L-BFGS-B",
         bounds=bounds
     )
+
+
 
     attack = dict(zip(teams, result.x[:n]))
     defense = dict(zip(teams, result.x[n:2 * n]))
